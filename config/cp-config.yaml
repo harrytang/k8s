@@ -1,0 +1,19 @@
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: JoinConfiguration
+caCertPath: /etc/kubernetes/pki/ca.crt
+controlPlane:
+  certificateKey: xxx
+  localAPIEndpoint:
+    advertiseAddress: 192.168.68.61
+    bindPort: 6443
+discovery:
+  bootstrapToken:
+    apiServerEndpoint: k8s.harrytang.com:6443
+    caCertHashes:
+      - sha256:yyy
+    token: zzz.aaabbb
+  tlsBootstrapToken: zzz.aaabbb
+nodeRegistration:
+  kubeletExtraArgs:
+    - name: node-ip
+      value: 192.168.68.61

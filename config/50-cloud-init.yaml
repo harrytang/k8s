@@ -1,0 +1,18 @@
+# /etc/netplan/50-cloud-init.yaml
+network:
+  ethernets:
+    eth0:
+      dhcp4: no
+      addresses:
+        - 192.168.68.57/22 # 22 is the CIDR notation for 255.255.252.0
+      routes:
+        - to: default
+          via: 192.168.68.1
+      nameservers:
+        addresses:
+          - 1.1.1.1
+          - 8.8.8.8
+          - 2606:4700:4700::1111
+          - 2001:4860:4860::8888
+      optional: true
+  version: 2

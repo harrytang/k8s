@@ -1,0 +1,44 @@
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+controlPlaneEndpoint: 'k8s.harrytang.com:6443'
+etcd:
+  local:
+    extraArgs:
+      listen-metrics-urls: http://0.0.0.0:2381
+controllerManager:
+  extraArgs:
+    bind-address: '0.0.0.0'
+scheduler:
+  extraArgs:
+    bind-address: '0.0.0.0'
+networking:
+  podSubnet: 10.1.0.0/16,fd01::/64
+  serviceSubnet: 10.96.0.0/16,fd98::/108
+apiServer:
+  extraArgs:
+    encryption-provider-config: /etc/kubernetes/enc/enc.yaml
+  certSANs:
+    - 'k8s.harrytang.com'
+  extraVolumes:
+    - name: enc
+      hostPath: /etc/kubernetes/enc
+      mountPath: /etc/kubernetes/enc
+      pathType: DirectoryOrCreate
+      readOnly: true
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: 192.168.68.58
+  bindPort: 6443
+nodeRegistration:
+  kubeletExtraArgs:
+    node-ip: 192.168.68.58
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+serverTLSBootstrap: true
+---
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+metricsBindAddress: '0.0.0.0:10249'
