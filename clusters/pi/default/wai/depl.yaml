@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: wai
-          image: containous/whoami:v1.5.0
+          image: containous/whoami:v1.4.0 # {"$imagepolicy": "default:wai"}
           resources:
             requests:
               memory: '64Mi'
