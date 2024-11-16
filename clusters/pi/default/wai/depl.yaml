@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wai
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wai
+  template:
+    metadata:
+      labels:
+        app: wai
+    spec:
+      containers:
+        - name: wai
+          image: containous/whoami:v1.5.0
+          resources:
+            requests:
+              memory: '64Mi'
+              cpu: '0.1'
+            limits:
+              memory: '64Mi'
+              cpu: '0.1'

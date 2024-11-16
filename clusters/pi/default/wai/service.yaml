@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wai
+  namespace: default
+spec:
+  selector:
+    app: wai
+  ports:
+    - name: wai
+      protocol: TCP
+      port: 80
+      targetPort: 80
