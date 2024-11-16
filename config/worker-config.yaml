@@ -1,0 +1,15 @@
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: JoinConfiguration
+discovery:
+  bootstrapToken:
+    apiServerEndpoint: k8s.harrytang.com:6443
+    token: 'x.y'
+    caCertHashes:
+      - 'sha256:x'
+nodeRegistration:
+  kubeletExtraArgs:
+    node-ip: '{NODE_PRIVATE_IP4},{NODE_PRIVATE_IP6}'
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+serverTLSBootstrap: true
