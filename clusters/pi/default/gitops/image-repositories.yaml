@@ -7,3 +7,12 @@ metadata:
 spec:
   image: containous/whoami
   interval: 10m0s
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: dbeaver
+  namespace: default
+spec:
+  image: dbeaver/cloudbeaver
+  interval: 10m0s

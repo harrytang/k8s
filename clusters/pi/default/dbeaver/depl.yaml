@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: dbeaver
-          image: dbeaver/cloudbeaver:24.2
+          image: dbeaver/cloudbeaver:24.2 # {"$imagepolicy": "default:dbeaver"}
           ports:
             - containerPort: 8978
           volumeMounts:
