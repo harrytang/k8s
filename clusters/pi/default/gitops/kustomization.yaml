@@ -3,3 +3,5 @@ kind: Kustomization
 resources:
   - sealed-secret.yaml
   - image-update-automation.yaml
+  - image-policies.yaml
+  - image-repositories.yaml
