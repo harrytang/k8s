@@ -14,9 +14,11 @@ spec:
         name: cnpg
         namespace: cnpg-system
       interval: 24h
+  install:
+    crds: CreateReplace
   values:
     monitoring:
-      podMonitorEnabled: true
+      podMonitorEnabled: false
       podMonitorAdditionalLabels:
         release: kube-prom-stack
       grafanaDashboard:
