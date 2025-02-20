@@ -1,0 +1,47 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: longhorn
+  namespace: longhorn-system
+spec:
+  interval: 24h
+  url: https://charts.longhorn.io
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: longhorn
+  namespace: longhorn-system
+spec:
+  interval: 24h
+  chart:
+    spec:
+      chart: longhorn
+      version: '~1.8.0'
+      sourceRef:
+        kind: HelmRepository
+        name: longhorn
+        namespace: longhorn-system
+      interval: 24h
+  values:
+    defaultBackupStore:
+      backupTarget: s3://pi-k8s-longhorn@nl-ams/
+      backupTargetCredentialSecret: scaleway
+    persistence:
+      defaultDataLocality: 'best-effort'
+    metrics:
+      serviceMonitor:
+        enabled: false # will case error if prometheus is not installed, so disable it and enable after prometheus is installed
+  # postRenderers:
+  #   - kustomize:
+  #       patches:
+  #         - target:
+  #             version: v1
+  #             kind: ServiceMonitor
+  #             name: longhorn-prometheus-servicemonitor
+  #           patch: |
+  #             - op: add
+  #               path: /metadata/labels
+  #               value:
+  #                 release: kube-prom-stack
