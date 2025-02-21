@@ -13,4 +13,4 @@ resources:
   # - xfs.storage-class.yaml
   # - rwx.storage-class.yaml
   # - single.storage-class.yaml
-  # - prometheus-rule.yaml # wait for prometheus to be ready
+  - prometheus-rule.yaml # wait for prometheus to be ready

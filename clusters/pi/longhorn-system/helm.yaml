@@ -32,7 +32,7 @@ spec:
       defaultDataLocality: 'best-effort'
     metrics:
       serviceMonitor:
-        enabled: false # will case error if prometheus is not installed, so disable it and enable after prometheus is installed
+        enabled: true # will case error if prometheus is not installed, so disable it and enable after prometheus is installed
   # postRenderers:
   #   - kustomize:
   #       patches:
