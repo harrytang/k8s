@@ -33,6 +33,8 @@ spec:
     metrics:
       serviceMonitor:
         enabled: true # will case error if prometheus is not installed, so disable it and enable after prometheus is installed
+        additionalLabels:
+          release: kube-prom-stack
   # postRenderers:
   #   - kustomize:
   #       patches:
