@@ -40,12 +40,12 @@ spec:
         #     noTLSVerify: true
         - hostname: storage.harrytang.com
           service: http://longhorn-frontend.longhorn-system:80
-        # - hostname: prometheus.harrytang.com
-        #   service: http://kube-prom-stack-kube-prome-prometheus.observability:9090
-        # - hostname: grafana.harrytang.com
-        #   service: http://kube-prom-stack-grafana.observability:80
-        # - hostname: alerts.harrytang.com
-        #   service: http://kube-prom-stack-kube-prome-alertmanager.observability:9093
+        - hostname: prometheus.harrytang.com
+          service: http://kube-prom-stack-kube-prome-prometheus.observability:9090
+        - hostname: grafana.harrytang.com
+          service: http://kube-prom-stack-grafana.observability:80
+        - hostname: alerts.harrytang.com
+          service: http://kube-prom-stack-kube-prome-alertmanager.observability:9093
         # # - hostname: kiali.harrytang.com
         #   service: http://kiali.istio-system:20001
         # - hostname: jaeger.harrytang.com
