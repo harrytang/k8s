@@ -50,8 +50,8 @@ spec:
         #   service: http://kiali.istio-system:20001
         # - hostname: jaeger.harrytang.com
         #   service: http://tempo.observability:16686
-        # - hostname: dbeaver.harrytang.com
-        #   service: http://dbeaver.default:8978
+        - hostname: dbeaver.harrytang.com
+          service: http://dbeaver.default:8978
         # - hostname: nats.powerkernel.net
         #   service: http://nats-headless.nats-system:8222
         # - hostname: s3.harrytang.com
