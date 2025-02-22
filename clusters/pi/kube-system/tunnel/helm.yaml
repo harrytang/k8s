@@ -64,5 +64,5 @@ spec:
         #   noTLSVerify: true
         # - hostname: wai.harrytang.com
         #   service: http://wai.default:80
-        # - hostname: nextcloud.harrytang.com
-        #   service: http://nextcloud.nextcloud:8080
+        - hostname: nextcloud.harrytang.com
+          service: http://nextcloud.nextcloud:8080
