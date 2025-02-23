@@ -59,7 +59,7 @@ spec:
         #   # originRequest:
         #   #   noTLSVerify: true
         - hostname: minio.harrytang.com
-          service: http://nextcloud-console.nextcloud:9090
+          service: https://nextcloud-console.nextcloud:9443
         # originRequest:
         #   noTLSVerify: true
         # - hostname: wai.harrytang.com
