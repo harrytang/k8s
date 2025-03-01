@@ -1,0 +1,35 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: tailscale
+  namespace: tailscale
+spec:
+  interval: 24h
+  url: https://pkgs.tailscale.com/helmcharts
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tailscale-operator
+  namespace: tailscale
+spec:
+  interval: 24h
+  chart:
+    spec:
+      chart: tailscale-operator
+      version: '^1.80.0'
+      sourceRef:
+        kind: HelmRepository
+        name: tailscale
+        namespace: tailscale
+      interval: 24h
+  values:
+    operatorConfig:
+      hostname: 'oke-k8s-tailscale-operator'
+      defaultTags:
+        - 'tag:oke-k8s-operator'
+    proxyConfig:
+      defaultTags: 'tag:oke-k8s'
+    apiServerProxyConfig:
+      mode: 'true'
