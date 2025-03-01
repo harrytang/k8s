@@ -34,10 +34,8 @@ spec:
       secretName: tunnel-credentials
       enableWarp: true
       ingress: # https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/configure-tunnels/origin-configuration/#tls-settings
-        # - hostname: dash.harrytang.com
-        #   service: https://kubernetes-dashboard-kong-proxy.kubernetes-dashboard:443
-        #   originRequest:
-        #     noTLSVerify: true
+        - hostname: maxscale.harrytang.com
+          service: http://maxscale-galera-gui.nextcloud:8989
         - hostname: storage.harrytang.com
           service: http://longhorn-frontend.longhorn-system:80
         - hostname: prometheus.harrytang.com
