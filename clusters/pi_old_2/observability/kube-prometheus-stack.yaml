@@ -1,0 +1,205 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: prometheus-community
+  namespace: observability
+spec:
+  interval: 24h
+  url: https://prometheus-community.github.io/helm-charts
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-prom-stack
+  namespace: observability
+spec:
+  interval: 24h
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      version: '^69.0.0'
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: observability
+      interval: 24h
+  values:
+    crds:
+      upgradeJob:
+        enabled: true
+        forceConflicts: true
+    prometheus:
+      prometheusSpec:
+        externalUrl: https://prometheus.harrytang.com
+        replicas: 1
+        retention: 30d
+        retentionSize: 15GiB
+        storageSpec:
+          {
+            volumeClaimTemplate:
+              { spec: { accessModes: ['ReadWriteOnce'], resources: { requests: { storage: '20Gi' } } } },
+          }
+        serviceMonitorNamespaceSelector:
+          matchExpressions:
+            - key: kubernetes.io/metadata.name
+              operator: In
+              values:
+                - longhorn-system
+                - observability
+                - cnpg-system
+                - trivy-system
+                - istio-system
+        ruleNameSpaceSelector:
+          matchExpressions:
+            - key: kubernetes.io/metadata.name
+              operator: In
+              values:
+                - longhorn-system
+                - observability
+                - cnpg-system
+                - trivy-system
+                - istio-system
+        podMonitorNamespaceSelector:
+          matchExpressions:
+            - key: kubernetes.io/metadata.name
+              operator: In
+              values:
+                - longhorn-system
+                - observability
+                - cnpg-system
+                - trivy-system
+                - istio-system
+    grafana:
+      enabled: true
+      admin:
+        existingSecret: 'grafana-admin'
+        userKey: ADMIN_USER
+        passwordKey: ADMIN_PASSWORD
+      additionalDataSources:
+        # - name: loki # no need to add loki as datasource, loki.release.yaml does it
+        #   type: loki
+        #   isDefault: false
+        #   url: http://loki.observability:3100
+        - name: tempo
+          type: tempo
+          isDefault: false
+          url: http://tempo.observability:3100
+
+    alertmanager:
+      config:
+        route:
+          group_by: ['alertname']
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 24h
+          receiver: 'slack'
+          routes:
+            - receiver: 'null'
+              matchers:
+                - alertname =~ "InfoInhibitor|Watchdog"
+            - receiver: 'slack' # k8s system
+              matchers:
+                - severity =~ "warning|critical"
+                - namespace =~ "kubernetes-dashboard|kube-system|kube-public|default|flux-system|longhorn-system|postgresql|cert-manager|cnpg-system|ingress|observability|falco|trivy-system"
+        receivers:
+          - name: 'null'
+          - name: 'slack'
+            slack_configs:
+              - api_url_file: '/etc/alertmanager/secrets/slack-url/SLACK_API_URL'
+                channel: '#devops'
+                color: '{{ template "slack.color" . }}'
+                title: '{{ template "slack.title" . }}'
+                text: '{{ template "slack.text" . }}'
+                send_resolved: true
+                actions:
+                  - type: button
+                    text: 'Runbook :green_book:'
+                    url: '{{ (index .Alerts 0).Annotations.runbook_url }}'
+                  - type: button
+                    text: 'Query :mag:'
+                    url: '{{ (index .Alerts 0).GeneratorURL }}'
+                  - type: button
+                    text: 'Dashboard :chart_with_upwards_trend:'
+                    url: '{{ (index .Alerts 0).Annotations.dashboard_url }}'
+                  - type: button
+                    text: 'Silence :no_bell:'
+                    url: '{{ template "__alert_silence_link" . }}'
+      templateFiles:
+        slack.tmpl: |-
+          {{/* Alertmanager Silence link */}}
+          {{ define "__alert_silence_link" -}}
+              {{ .ExternalURL }}/#/silences/new?filter=%7B
+              {{- range .CommonLabels.SortedPairs -}}
+                  {{- if ne .Name "alertname" -}}
+                      {{- .Name }}%3D"{{- .Value -}}"%2C%20
+                  {{- end -}}
+              {{- end -}}
+              alertname%3D"{{- .CommonLabels.alertname -}}"%7D
+          {{- end }}
+
+          {{/* Severity of the alert */}}
+          {{ define "__alert_severity" -}}
+              {{- if eq .CommonLabels.severity "critical" -}}
+              *Severity:* `Critical`
+              {{- else if eq .CommonLabels.severity "warning" -}}
+              *Severity:* `Warning`
+              {{- else if eq .CommonLabels.severity "info" -}}
+              *Severity:* `Info`
+              {{- else -}}
+              *Severity:* :question: {{ .CommonLabels.severity }}
+              {{- end }}
+          {{- end }}
+
+          {{/* Title of the Slack alert */}}
+          {{ define "slack.title" -}}
+            [{{ .Status | toUpper -}}
+            {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
+            ] {{ .CommonLabels.alertname }}
+          {{- end }}
+
+
+          {{/* Color of Slack attachment (appears as line next to alert )*/}}
+          {{ define "slack.color" -}}
+              {{ if eq .Status "firing" -}}
+                  {{ if eq .CommonLabels.severity "warning" -}}
+                      warning
+                  {{- else if eq .CommonLabels.severity "critical" -}}
+                      danger
+                  {{- else -}}
+                      #439FE0
+                  {{- end -}}
+              {{ else -}}
+              good
+              {{- end }}
+          {{- end }}
+
+          {{/* The text to display in the alert */}}
+          {{ define "slack.text" -}}
+
+              {{ template "__alert_severity" . }}
+              {{- if (index .Alerts 0).Annotations.summary }}
+              {{- "\n" -}}
+              *Summary:* {{ (index .Alerts 0).Annotations.summary }}
+              {{- end }}
+
+              {{ range .Alerts }}
+
+                  {{- if .Annotations.description }}
+                  {{- "\n" -}}
+                  {{ .Annotations.description }}
+                  {{- "\n" -}}
+                  {{- end }}
+                  {{- if .Annotations.message }}
+                  {{- "\n" -}}
+                  {{ .Annotations.message }}
+                  {{- "\n" -}}
+                  {{- end }}
+
+              {{- end }}
+
+          {{- end }}
+      alertmanagerSpec:
+        externalUrl: https://alerts.harrytang.com
+        secrets:
+          - slack-url

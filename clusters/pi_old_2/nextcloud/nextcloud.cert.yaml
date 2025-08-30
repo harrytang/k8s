@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  dnsNames:
+    - '*.nextcloud'
+    - '*.nextcloud.svc'
+    - '*.nextcloud.svc.cluster.local'
+    - '*.nextcloud-hl.nextcloud'
+    - '*.nextcloud-hl.nextcloud.svc'
+    - '*.nextcloud-hl.nextcloud.svc.cluster'
+    - '*.nextcloud-hl.nextcloud.svc.cluster.local'
+  secretName: nextcloud-tls
+  issuerRef:
+    name: ecdsa
+    kind: ClusterIssuer

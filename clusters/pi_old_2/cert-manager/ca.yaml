@@ -2,7 +2,7 @@
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: selfsigned-cluster-issuer
+  name: selfsigned
 spec:
   selfSigned: {}
 ---
@@ -13,7 +13,7 @@ metadata:
   namespace: cert-manager
 spec:
   isCA: true
-  duration: 175200h # 10y
+  duration: 175200h # 20y
   renewBefore: 720h # 30d
   subject:
     organizations:
@@ -28,13 +28,13 @@ spec:
     rotationPolicy: Always
   issuerRef:
     kind: ClusterIssuer
-    name: selfsigned-cluster-issuer
+    name: selfsigned
     group: cert-manager.io
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: root-cluster-issuer
+  name: root
 spec:
   ca:
     secretName: root-secret
@@ -46,7 +46,7 @@ metadata:
   namespace: cert-manager
 spec:
   isCA: true
-  duration: 87600h # 3 years
+  duration: 87600h # 10 years
   renewBefore: 720h # 30 days
   subject:
     organizations:
@@ -61,13 +61,13 @@ spec:
     rotationPolicy: Always
   issuerRef:
     kind: ClusterIssuer
-    name: root-cluster-issuer
+    name: root
     group: cert-manager.io
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: ecdsa-cluster-issuer
+  name: ecdsa
 spec:
   ca:
     secretName: ecdsa-secret

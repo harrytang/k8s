@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - grafana-admin.sealed-secret.yaml
+  - slack-url.sealed-secret.yaml
+  - tempo-env.sealed-secret.yaml
+  - tempo-env.config-map.yaml
+  # Releases
+  - kube-prometheus-stack.yaml
+  - grafana.yaml
+  # - jaeger.release.yaml
+  - dashboards/longhorn-dashboard.config-map.yaml
+  - dashboards/trivy-dashboard.config-map.yaml # if trivy is deployed
+  - dashboards/istio-dashboard.config-map.yaml # if istio is deployed
+  # Minio
+  # - minio-env.sealed-secret.yaml
+  # - tenant.release.yaml

@@ -1,0 +1,58 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: minio
+  namespace: nextcloud
+spec:
+  interval: 24h
+  chart:
+    spec:
+      chart: tenant # https://artifacthub.io/packages/helm/minio-operator/tenant
+      version: '^7.0.0'
+      sourceRef:
+        kind: HelmRepository
+        name: minio-operator
+        namespace: minio-operator
+      interval: 24h
+  values:
+    tenant:
+      name: nextcloud
+      configuration:
+        name: minio-env-configuration
+      configSecret:
+        name: minio-env-configuration
+        accessKey: false
+        secretKey: false
+        existingSecret: true
+      users:
+        - name: minio-user
+      env:
+        - name: MINIO_STORAGE_CLASS_STANDARD
+          value: EC:2
+      pools:
+        - servers: 6
+          name: pool-0
+          volumesPerServer: 1
+          size: 500Gi
+          storageClassName: longhorn-single
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchExpressions:
+                      - key: v1.min.io/tenant
+                        operator: In
+                        values:
+                          - cloud
+                      - key: v1.min.io/pool
+                        operator: In
+                        values:
+                          - pool-0
+                  topologyKey: kubernetes.io/hostname
+      buckets:
+        - name: nextcloud
+      certificate:
+        requestAutoCert: false
+        # externalCertSecret:
+        #   - name: nextcloud-tls
+        #     type: cert-manager.io/v1

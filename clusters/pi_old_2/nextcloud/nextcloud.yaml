@@ -1,0 +1,116 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  interval: 24h
+  url: https://nextcloud.github.io/helm/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  interval: 24h
+  chart:
+    spec:
+      chart: nextcloud
+      version: '~6.6.4'
+      sourceRef:
+        kind: HelmRepository
+        name: nextcloud
+        namespace: nextcloud
+      interval: 24h
+  values:
+    replicaCount: 1
+    livenessProbe:
+      initialDelaySeconds: 180
+    readinessProbe:
+      initialDelaySeconds: 180
+    nextcloud:
+      update: true
+      host: nextcloud.harrytang.com
+      trustedDomains:
+        - nextcloud.harrytang.com
+        - homecloud.harrytang.com
+      existingSecret:
+        enabled: true
+        secretName: nextcloud-secrets
+      mail:
+        enabled: true
+        fromAddress: noreply
+        domain: harrytang.com
+      objectStore:
+        s3:
+          enabled: true
+          bucket: nextcloud
+          usePathStyle: true
+          host: minio.nextcloud.svc.cluster.local
+          existingSecret: nextcloud-secrets
+          secretKeys:
+            accessKey: minio-access-key
+            secretKey: minio-secret-key
+          ssl: false
+          port: 80
+      configs:
+        proxy.config.php: |-
+          <?php
+          $CONFIG = array (
+            'trusted_proxies' => array(
+              0 => '127.0.0.1',
+              1 => '10.0.0.0/8',
+            ),
+            'forwarded_for_headers' => array('HTTP_X_FORWARDED_FOR'),
+          );
+        zz.config.php: |-
+          <?php
+          $CONFIG = array (
+            'trusted_domains' => array(
+              0 => 'localhost',
+              1 => 'nextcloud.harrytang.com',
+              2 => 'homecloud.harrytang.com',
+            ),
+          );
+      phpConfigs:
+        zz-custom.ini: |-
+          memory_limit=1024M
+          upload_max_filesize=100G
+          post_max_size=100G
+          max_execution_time=86400
+          max_input_time=86400
+      extraVolumes:
+        - name: private-ca
+          configMap:
+            name: private-ca
+            items:
+              - key: private-ca.pem
+                path: private-ca.crt
+      extraVolumeMounts:
+        - name: private-ca
+          mountPath: /usr/local/share/ca-certificates
+          readOnly: true
+    lifecycle:
+      postStartCommand:
+        - update-ca-certificates
+    persistence:
+      enabled: true
+      accessMode: ReadWriteMany
+    phpClientHttpsFix:
+      enabled: true
+    cronjob:
+      enabled: false
+    internalDatabase:
+      enabled: false
+    externalDatabase:
+      enabled: true
+      type: mysql
+      host: maxscale-galera.nextcloud.svc.cluster.local
+      database: nextcloud
+      existingSecret:
+        enabled: true
+        secretName: mariadb
+        usernameKey: mariadb-username
+        passwordKey: mariadb-password

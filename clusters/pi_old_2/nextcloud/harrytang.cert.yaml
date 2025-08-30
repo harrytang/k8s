@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: harrytang-com
+  namespace: nextcloud
+spec:
+  secretName: harrytang-com-tls
+  dnsNames:
+    - 'harrytang.com'
+    - '*.harrytang.com'
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
