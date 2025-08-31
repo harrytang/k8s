@@ -4,13 +4,13 @@ resources:
   - namespace.yaml
   - scaleway.sealed-secret.yaml
   - helm.yaml
-  - settings.yaml
-  - recurring-jobs.yaml
-  - https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v8.2.0/client/config/crd/snapshot.storage.k8s.io_volumesnapshotclasses.yaml
-  - https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v8.2.0/client/config/crd/snapshot.storage.k8s.io_volumesnapshotcontents.yaml
-  - https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v8.2.0/client/config/crd/snapshot.storage.k8s.io_volumesnapshots.yaml
-  - longhorn.volume-snapshot-class.yaml
+  # - settings.yaml
+  # - recurring-jobs.yaml
+  # - https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v8.2.0/client/config/crd/snapshot.storage.k8s.io_volumesnapshotclasses.yaml
+  # - https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v8.2.0/client/config/crd/snapshot.storage.k8s.io_volumesnapshotcontents.yaml
+  # - https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v8.2.0/client/config/crd/snapshot.storage.k8s.io_volumesnapshots.yaml
+  # - longhorn.volume-snapshot-class.yaml
   # - xfs.storage-class.yaml
   # - rwx.storage-class.yaml
-  - single.storage-class.yaml
+  # - single.storage-class.yaml
   # - prometheus-rule.yaml # wait for prometheus to be ready
