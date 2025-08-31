@@ -4,4 +4,4 @@ resources:
   - namespace.yaml
   - helm.yaml
   - cloudflare-api-token.yaml
-  #- letsencrypt.cluster-issuer.yaml
+  - letsencrypt.cluster-issuer.yaml
