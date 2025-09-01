@@ -25,19 +25,19 @@ spec:
         namespace: longhorn-system
       interval: 24h
   values:
-    defaultSettings:
-      concurrentAutomaticEngineUpgradePerNodeLimit: 1
-      systemManagedComponentsNodeSelector: 'longhorn.io:true'
-    taintToleration: 'node-role.kubernetes.io/control-plane:NoSchedule'
-    longhornManager:
-      nodeSelector:
-        longhorn.io: 'true'
-    longhornDriver:
-      nodeSelector:
-        longhorn.io: 'true'
-    longhornUI:
-      nodeSelector:
-        longhorn.io: 'true'
+    # defaultSettings:
+    #   concurrentAutomaticEngineUpgradePerNodeLimit: 1
+    #   systemManagedComponentsNodeSelector: 'longhorn.io:true'
+    # taintToleration: 'node-role.kubernetes.io/control-plane:NoSchedule'
+    # longhornManager:
+    #   nodeSelector:
+    #     longhorn.io: 'true'
+    # longhornDriver:
+    #   nodeSelector:
+    #     longhorn.io: 'true'
+    # longhornUI:
+    #   nodeSelector:
+    #     longhorn.io: 'true'
     defaultBackupStore:
       backupTarget: s3://pi-k8s-longhorn@nl-ams/
       backupTargetCredentialSecret: scaleway
