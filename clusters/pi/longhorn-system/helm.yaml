@@ -18,7 +18,7 @@ spec:
   chart:
     spec:
       chart: longhorn
-      version: '~1.8.0'
+      version: '~1.9.0'
       sourceRef:
         kind: HelmRepository
         name: longhorn
@@ -28,7 +28,7 @@ spec:
     defaultSettings:
       concurrentAutomaticEngineUpgradePerNodeLimit: 1
       systemManagedComponentsNodeSelector: 'longhorn.io/system=true'
-      taintToleration: 'node-role.kubernetes.io/control-plane:NoSchedule'
+      # taintToleration: 'node-role.kubernetes.io/control-plane:NoSchedule'
     defaultBackupStore:
       backupTarget: s3://pi-k8s-longhorn@nl-ams/
       backupTargetCredentialSecret: scaleway
