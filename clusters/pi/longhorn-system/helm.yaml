@@ -27,7 +27,7 @@ spec:
   values:
     defaultSettings:
       concurrentAutomaticEngineUpgradePerNodeLimit: 1
-      systemManagedComponentsNodeSelector: 'longhorn.io/system=true'
+      systemManagedComponentsNodeSelector: 'longhorn.io=true'
       # taintToleration: 'node-role.kubernetes.io/control-plane:NoSchedule'
     defaultBackupStore:
       backupTarget: s3://pi-k8s-longhorn@nl-ams/
