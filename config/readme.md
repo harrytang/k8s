@@ -62,3 +62,20 @@ backend k8s-api-backend
 ```bash
 kubeadm config migrate --old-config old-config.yaml --new-config new-config.yaml
 ```
+
+## Flux
+
+```bash
+flux bootstrap git \
+  --cluster-domain=k8s.harrytang.com \
+  --components source-controller,kustomize-controller,helm-controller,notification-controller \
+  --components-extra image-reflector-controller,image-automation-controller \
+  --url=ssh://git@github.com/harrytang/k8s \
+  --branch=main \
+  --private-key-file=./id_ed25519 \
+  --path=clusters/pi \
+  --gpg-key-id=A28E2D40BEF33CC5 \
+  --gpg-key-ring=./keyring.gpg \
+  --author-email=it@harrytang.com \
+  --author-name=mrgitops
+```

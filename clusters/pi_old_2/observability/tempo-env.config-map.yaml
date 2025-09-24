@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: tempo-env
-  namespace: observability
-data:
-  AWS_ACCESS_KEY_ID: 'SCWJ6DQWJY4Q2PBMZC7A'

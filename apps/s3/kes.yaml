@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kes-configuration
+  namespace: s3
+type: Opaque
+stringData:
+  server-config.yaml: |-
+    version: v1
+    address: :7373
+    admin:
+      identity: _ # Effectively disabled since no root identity necessary.
+    tls:
+      key: /tmp/kes/server.key   # Path to the TLS private key
+      cert: /tmp/kes/server.crt # Path to the TLS certificate
+      proxy:
+        identities: []
+        header:
+          cert: X-Tls-Client-Cert      
+    policy:
+      my-policy:
+        allow:
+        - /v1/api
+        - /v1/key/create/*
+        - /v1/key/import/*
+        - /v1/key/delete/*
+        - /v1/key/list/*
+        - /v1/key/generate/*
+        - /v1/key/decrypt/*
+        - /v1/key/encrypt/*
+        - /v1/key/bulk/decrypt/*
+        - /v1/status
+        - /v1/api
+        - /v1/metrics
+        - /v1/log/audit
+        - /v1/log/error
+        identities:
+        - ${MINIO_KES_IDENTITY}
+    cache:
+      expiry:
+        any: 5m0s
+        unused: 20s
+    log:
+      error: on
+      audit: off
+    keystore:
+      gcp:
+        secretmanager:
+          project_id: harrytang-xyz-1741877577167
+          credentials:
+            client_email:   "minio-kes@harrytang.gserviceaccount.com"
+            client_id:      "10138822909"
+            private_key_id: "0c490a1"
+            private_key:    "-----BEGIN PRIVATE KEY-----\nnRpmy8UQMmBat1X9rtXhSLu8=\n-----END PRIVATE KEY-----\n"

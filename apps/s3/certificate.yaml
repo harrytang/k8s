@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: harrytang
+  namespace: s3
+spec:
+  secretName: harrytang-tls
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+  dnsNames:
+    - s3.harrytang.com
+    - '*.s3.harrytang.com'
+    ## internal
+    - '*.s3.svc.k8s.harrytang.com'
+    - '*.minio.s3.svc.k8s.harrytang.com'
+    - '*.s3-console.s3.svc.k8s.harrytang.com'
+    - '*.s3-hl.s3.svc.k8s.harrytang.com'

@@ -52,14 +52,14 @@ spec:
         #   service: http://dbeaver.default:8978
         # - hostname: nats.powerkernel.net
         #   service: http://nats-headless.nats-system:8222
-        # - hostname: s3.harrytang.com
-        #   service: http://minio.nextcloud:80
-        #   # originRequest:
-        #   #   noTLSVerify: true
+        - hostname: s3.harrytang.com
+          service: http://minio.s3.svc.k8s.harrytang.com:80
+          # originRequest:
+          #   noTLSVerify: true
         - hostname: minio.harrytang.com
-          service: http://s3-console.s3:9090
-        # originRequest:
-        #   noTLSVerify: true
+          service: http://s3-console.s3.svc.k8s.harrytang.com:9090
+          # originRequest:
+          #   noTLSVerify: true
         # - hostname: wai.harrytang.com
         #   service: http://wai.default:80
         # - hostname: nextcloud.harrytang.com
