@@ -25,19 +25,6 @@ spec:
         namespace: longhorn-system
       interval: 24h
   values:
-    # defaultSettings:
-    #   concurrentAutomaticEngineUpgradePerNodeLimit: 1
-    #   systemManagedComponentsNodeSelector: 'longhorn.io:true'
-    # taintToleration: 'node-role.kubernetes.io/control-plane:NoSchedule'
-    # longhornManager:
-    #   nodeSelector:
-    #     longhorn.io: 'true'
-    # longhornDriver:
-    #   nodeSelector:
-    #     longhorn.io: 'true'
-    # longhornUI:
-    #   nodeSelector:
-    #     longhorn.io: 'true'
     defaultBackupStore:
       backupTarget: s3://pi-k8s-longhorn@nl-ams/
       backupTargetCredentialSecret: scaleway
@@ -48,3 +35,28 @@ spec:
         enabled: false # will case error if prometheus is not installed, so disable it and enable after prometheus is installed
         additionalLabels:
           release: kube-prom-stack
+    # postRenderers:
+    #   - kustomize:
+    #     patches:
+    #       - target:
+    #           version: v1
+    #           kind: DaemonSet
+    #           name: longhorn-csi-plugin
+    #         patch: |
+    #           - op: add
+    #             path: /spec/template/spec/tolerations
+    #             value:
+    #               - key: "node-role.kubernetes.io/control-plane"
+    #                 operator: "Exists"
+    #                 effect: "NoSchedule"
+    #       - target:
+    #           version: v1
+    #           kind: DaemonSet
+    #           name: longhorn-csi-plugin
+    #         patch: |
+    #           - op: add
+    #             path: /spec/template/spec/tolerations
+    #             value:
+    #               - key: "node-role.kubernetes.io/control-plane"
+    #                 operator: "Exists"
+    #                 effect: "NoSchedule"
