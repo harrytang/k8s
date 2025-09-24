@@ -1,4 +1,9 @@
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cert-manager
+---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
@@ -30,5 +35,3 @@ spec:
     extraArgs:
       - --dns01-recursive-nameservers=8.8.8.8:53,8.8.4.4:53
       - --dns01-recursive-nameservers-only
----
-
