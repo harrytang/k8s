@@ -4,3 +4,4 @@ resources:
   - cert-manager.yaml
   - minio-operator.yaml
   - metrics-server.yaml
+  - csr-approver.yaml
