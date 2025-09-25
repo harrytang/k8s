@@ -7,3 +7,4 @@ resources:
   - csr-approver.yaml
   - tunnel.yaml
   - tailscale.yaml
+  - longhorn.yaml
