@@ -5,3 +5,5 @@ resources:
   - minio-operator.yaml
   - metrics-server.yaml
   - csr-approver.yaml
+  - tunnel.yaml
+  - tailscale.yaml
