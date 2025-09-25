@@ -1,3 +1,4 @@
+---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -17,3 +18,12 @@ spec:
   values:
     providerRegex: '^(pi)\d+$'
     bypassDnsResolution: 'true'
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: kubelet-csr-approver
+  namespace: kube-system
+spec:
+  interval: 24h
+  url: https://postfinance.github.io/kubelet-csr-approver
