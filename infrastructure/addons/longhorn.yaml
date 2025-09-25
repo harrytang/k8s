@@ -1,0 +1,85 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: longhorn-system
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: longhorn
+  namespace: longhorn-system
+spec:
+  interval: 24h
+  url: https://charts.longhorn.io
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: longhorn
+  namespace: longhorn-system
+spec:
+  interval: 24h
+  chart:
+    spec:
+      chart: longhorn
+      version: '~1.9.0'
+      sourceRef:
+        kind: HelmRepository
+        name: longhorn
+        namespace: longhorn-system
+      interval: 24h
+  values:
+    defaultBackupStore:
+      backupTarget: s3://pi-k8s-longhorn@nl-ams/
+      backupTargetCredentialSecret: scaleway
+    persistence:
+      defaultDataLocality: 'best-effort'
+    metrics:
+      serviceMonitor:
+        enabled: false # will case error if prometheus is not installed, so disable it and enable after prometheus is installed
+        additionalLabels:
+          release: kube-prom-stack
+    # postRenderers:
+    #   - kustomize:
+    #     patches:
+    #       - target:
+    #           version: v1
+    #           kind: DaemonSet
+    #           name: longhorn-csi-plugin
+    #         patch: |
+    #           - op: add
+    #             path: /spec/template/spec/tolerations
+    #             value:
+    #               - key: "node-role.kubernetes.io/control-plane"
+    #                 operator: "Exists"
+    #                 effect: "NoSchedule"
+    #       - target:
+    #           version: v1
+    #           kind: DaemonSet
+    #           name: longhorn-csi-plugin
+    #         patch: |
+    #           - op: add
+    #             path: /spec/template/spec/tolerations
+    #             value:
+    #               - key: "node-role.kubernetes.io/control-plane"
+    #                 operator: "Exists"
+    #                 effect: "NoSchedule"
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: scaleway
+  namespace: longhorn-system
+spec:
+  encryptedData:
+    AWS_ACCESS_KEY_ID: AgCnUCzagV4uDEVkswhndkR/cKE1B9awp+cul5yqlLjh0rB9mh2RwyZfTg4d+saW2iCEF5g4XeZ3XMd9ZCuA/0BgihNLNvFLjRI4i7hu4ZfPiML9RpeM8XGtzDS3uscJ3zd/nEh8op8bW/qQPcPkqSEiTzdt2gDuiE5X7oLPI4ALkRlUcVSN00DtV77fijsakD4S/WvzITZCSWlUq5U24+K9GY9uoyy9VNuUKlVoY4vdtZCzm8QtJ/hEYvPIlxhVt1NhzLUKbo35daebAYbsWQt4QC9x6Hek4Y+E1Lsgji8dkHXf9GeCPG0P1l8y3WdO3xpAYeQQmR7pqVvXkrFAbTCqWDHFN/GyO9Dy0Z1eHlXhljWxiLkxVs/wu9T9sxJW9Xwz0TqJ4KtYAkB4gN8lOQUn3wmozLSvJJuePfltk7RMt3jaslArWBf80T7JFS7ZGzqLARsjgJxRtqn6ec8r3Tek1pZHTx8U+cEv0T/Ttr6trNHJ/+mC0KgawR1BQkJIYRjwjqZ+nIb4j5TL0nNDqzZiP7OKVGMOu5QPHdGVDaaBRIlvj07A69SnKZVM1x1oBOe4b/E5y6/jJjQI4y2HUqELzFtHXP0oXwf09CEVaWU4vCKYIGjiVsYE1V812SzjTIUYyB/IMVvqMmLxpqMh/zuam+rPxiMayqMxovaQ6I/7NdZyVT1u9YQfTD1BYW0knJE3v8vAtbGS56gxQSy4ifTHWNGmQg==
+    AWS_ENDPOINTS: AgCTqWYYfjvYRP9U07HZGfLKyWYuOFsmUxBwJVT+qYSj42qDYuGmShsEeJ4+0K5/d4DRJ+aUbPScOe1yzRT1EA1xHKRUNIYzaAuBzPZ5CGhVNrlDPzJ9vEQwuVGqYaEzCkeMi52LcasfzAjYSom+g7G70sRvugPhwSZ8noUn2am+vJd8sDb3jF5FISiOcb0lwACMftQnsglNqW/sIVTL2mLlW3tsuD8+iPHg/H7Kjzf6Rv3Gv/imw6gEg/3IQhnwnT4uWOxVWfFgDT0Tt5wgLYb4H1I0EtGJrcqb3Ek3Qa59MSN/1iYMrusb26ZsnoiUqx2GgUFnvfdOjHJQERzPeXTAbXur6Txoq6dRNXJE7oSlKH+2y8ap8pbwTipbIVJ9RgSP4tsGaRJ+h4Ss1qFetsiPx61Ge8+cavJkGa2GAV874b5FxYnxoneQUgd9sXQ9Eyt6DrB/lwDCVm7lroc+Go0RId89WOMJvBgXkiMgudztN6+Dr8OWfS6sPfEheMOb0ISIKsLgtg1g0STZKOrbYFOnVzxnSqGS0sQ8hbKICBCAesKRJ8qP1rl4LviG9NTz/spw1jvU+IL+6eRh0cRZ94UW5Mv0JgKiDbfx+JMS7DZ81MBTL8Ob35wqQ0Tr4R/9i9tnG1csvXCNRoV3XEZaLmRjfLw8kGRR/jl26LlveQMTyA5bLxF5ud2QU9uRbaKC0D41B8Uug2C1uYfxOccPeDDjJaN8InwpdoJTnCk=
+    AWS_REGION: AgB7MeJn5aaBF1/ikbeTbl1KQDqzdeUmPVw42/2V6um2HgeMUtMC+doQvkRxusKYTeQLcwe5GRnSRnnyuHM47y/0toAcgXbHhJAFiqMYO5HMSwQ+jPZ3d6DLoOEWEISJe7DQevVaefQFD/na7WYve5QSLinwHmVqlYMGO+G/ajPc4TnPx3ML8O3V2U1RdVHS9P12w0ol1XqU1+6Wi5pxYZ+y4/QQXUC8oKMl4V1ErQTut4otHvZty/bkR4aISlhxYC2Agf8amc4L47WeE+yW8JhehWetIoN2NVdERZqCbCY8Uev1qKCmLXw0p96dZmatx96jbV0ky+kDB51DChKh720cWXHfsDmY3fmxENU5HMIxGZKVhA7sPyFb9NcN1ZbSowG9ImrYaxuJq/DmXE34Ll3AnYll0hD6kWrxDTceHpnjMBclBtgorDlBk2+vN323xCobFwcv9q/rxeFq5/Ap+ux+fZx6f55RLXR+vUo6YAFtAz2116NHbdo2ys4GXG0+WDxrxjbwtSaHjL42Je4nzfC+qko9uC+xoveZu4TT7bAbUBEztu30Bkhyjj2ncApSYvHLAoJPTmEP+yzoJGp/WroUW8zO8LqvN7B/1M8r7uw6GHW9C9jOEC8bpPtm0D7EnAIhIkRBHhjMzIBTOCx2XholK++M77H9YlLwOrQv/d8qld0aYX8Al6AVQcsxTvCFv76R5VipMG4=
+    AWS_SECRET_ACCESS_KEY: AgABvo3HWk8PjuoEfInQTzsOWj24gRnJxutAdjqjzCELH6d2ThPIQtmBIkraHBOkFHeCqJ/RKDNDkNX8oCbXoso/xAzb58k5xL9ar/if4QbvxRfPcMCelk+8wKGQdAEiWErH6h5/8iWpi2OrFRp1OWffqtpthcIrAYJbpppTv5RrGV6bxWi8cSJcCpGATTXVBJhH1ggCbngLFewTWVJ72uVNs0+nABYyHGe6gl4WO+6U9HvSBFZqylFY3RjdhaQ2zpdFmon2RXL9p3tRrEMYTZOBy2AxhmmwyhlxSpRNQK65BqJDJQ5tw87KO5hwK1iKxIfNn++8PCqa+INoD1pLAf4X2wQT+jJLwM4oA8JDpv6pdyrhJW8V93ixj2apLKdwKR/nnwl8AsMxvU8ybxwVqNLYdtRFub3dCNlKn0qfWesi3JITqDR2KWa3t6Ezt4QfxX5g2GWIe967UrmSGcJ/JydioGSum0ZnUoEV5l4GLFpAk780XuBQnAgmqwjgpsrNgx5sS3AEZNjE2bfYflK/r4DJgZIQ4XUdlCGnSuUDCvPJcsvcz2P+3YEg7G6tq5/m10GjDXIturpVR+WfAsNoZEL43hqgbtJbOpv3482BnLs/pRHOWug7EryhbsD8hgB9XrEAFOrWqlE70daqnCxGHOskBa9UUHZhpS56K1aQGxhAx68KAzbXwoOooQvuRJLvSji4SvnGDngPUXHwe/PsiOpYKGH2UTzS/K/m8XkVRms3Shi9G7E=
+  template:
+    metadata:
+      creationTimestamp: null
+      name: scaleway
+      namespace: longhorn-system
